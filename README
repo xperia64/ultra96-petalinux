@@ -1,0 +1,32 @@
+Setup Notes:
+	Set DTG settings to zcu100-revc
+	Set u-boot config target to xilinx_zynqmp_zcu100_revC_defconfig
+	Set yocto name to ultra96-zynqmp
+	Set Root filesystem type to SD card
+	Keep kernel defaults
+	Add desired packages to petalinux-image-full.bbappend
+	Enable packages in rootfs_config
+
+PetaLinux 2018.3 Bugs:
+	mipi-support-ultra96 is forcefully included and references a non-existent clock
+	remove it by renaming the original mipi-support-ultra96.dtsi files for backup
+	then create stub files
+
+	rootfs Kconfigs are way too lacking and may need to be supplemented by bbappends
+	old documentation says "petalinux-image.bbappend"
+	but "petalinux-image-full.bbappend" seems to be the correct one as of 2018.3?
+
+	An fbdev provides libgbm symlinked to libMali, but it is not built with libgbm support, must use wayland version for GBM
+	
+
+Other Notes:
+	vim-tiny is in the added package list because vim depends on X11 for whatever reason
+
+	The Mali driver is very picky regarding surface formats
+	Apparently XRGB8888 and/or 24/32-bit color are not supported
+	Must use RGB565 and/or 16/16-bit color
+
+	petalinux-features.conf is included after petalinuxbsp.conf
+	petalinux-features.conf sets mraa's and upm's bindings to depend on nodejs
+	To prevent this, set the binding variables in petalinuxbsp.conf
+	and add a _forcevariable = "1" for each of the binding variables
